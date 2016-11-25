@@ -3,7 +3,8 @@ var MyCustomFunctions = function () {
     var self = this;
     self.decideBlackListWhiteList = function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
         var outResultBoolean = false;
-        var switchChoices = {
+        var switchChoices = [];
+        switchChoices = {
             'BlackList': inEvaluatedValueForBlackList,
             'WhiteList': inEvaluatedValueForWhiteList
         };
