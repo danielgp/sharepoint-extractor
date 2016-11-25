@@ -33,3 +33,7 @@ SharePoint | Date
 ---------- | ----
 2013 Cloud | 25th of November 2016
 
+
+#Code quality analysis
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/badges/build.png?b=master)](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/build-status/master)
