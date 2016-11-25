@@ -1,22 +1,29 @@
 
-var myCustomFunctions = function () {
+var MyCustomFunctions = function () {
     var self = this;
     self.decideBlackListWhiteList = function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
         var outResultBoolean = false;
+        var switchChoices = {
+            'BlackList': inEvaluatedValueForBlackList,
+            'WhiteList': inEvaluatedValueForWhiteList
+        };
         switch (inDecisionValue) {
-            case inEvaluatedValueForWhiteList:
+            case switchChoices['BlackList']:
+                if (inBlackListArray.indexOf(inValueToEvaluate) === -1) {
+                    outResultBoolean = true;
+                }
+                break;
+            case switchChoices['WhiteList']:
                 if (inWhiteListArray.indexOf(inValueToEvaluate) > -1) {
                     outResultBoolean = true;
                 }
                 break;
-            case inEvaluatedValueForBlackList:
-                if (inBlackListArray.indexOf(inValueToEvaluate) === -1) {
-                    outResultBoolean = true;
-                }
+            default:
+                // intentionally left black as is not supposed to change default valuation
                 break;
         }
         return outResultBoolean;
     };
 };
 
-module.exports = myCustomFunctions;
+module.exports = MyCustomFunctions;

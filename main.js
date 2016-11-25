@@ -1,7 +1,7 @@
 var spauth = require('node-sp-auth');
 var request = require('request-promise');
 var config = require('./config.json');
-var myCustomFunctions = require('./custom_functions.js');
+var MyCustomFunctions = require('./custom_functions.js');
 var targetSharePoint = require('./targetSharePoint.json');
 var fs = require('fs');
 
@@ -71,10 +71,9 @@ spauth
                     ];
                     wStreamListFields.write('"' + strListFieldsHeaders.join('"' + config.General.ListSeparator + '"') + '"\n');
                     wStreamList.write('"' + Object.keys(dataListLight[0]).join('"' + config.General.ListSeparator + '"') + '"\n');
-                    dataListLightLength = dataListLight[0].length;
                     dataListLight.forEach(function (crtListParameters) {
                         var crtListName = crtListParameters.Title;
-                        var myFunctions = new myCustomFunctions();
+                        var myFunctions = new MyCustomFunctions();
                         var crtListWillBeExtracted = myFunctions.decideBlackListWhiteList(crtListParameters.Hidden, false, config.SharePoint.Filters.Lists.NotHidden.BlackList, true, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListName);
                         if (crtListWillBeExtracted) {
                             wStreamList.write('"' + Object.keys(crtListParameters).map(function (x) {
@@ -87,11 +86,10 @@ spauth
                                 json: true
                             }).then(function (response) {
                                 var dataObject = response.d.results;
-                                var headersArray = [];
-                                var fieldsArray = [];
-                                var fieldsTypeArray = [];
-                                var crtListField = [];
                                 if (Object.keys(dataObject).length > 0) {
+                                    var headersArray = [];
+                                    var fieldsArray = [];
+                                    var fieldsTypeArray = [];
                                     var counter = 0;
                                     dataObject.forEach(function (item) {
                                         var crtRecordFieldWillBeExtracted = myFunctions.decideBlackListWhiteList(item.CanBeDeleted, true, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, false, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, item.InternalName);
@@ -104,7 +102,7 @@ spauth
                                             fieldsArray[counter] = item.StaticName;
                                             fieldsTypeArray[counter] = item.TypeAsString;
                                             counter++;
-                                            crtListField = [
+                                            var crtListField = [
                                                 crtListName,
                                                 item.Title,
                                                 item.StaticName,
