@@ -1,0 +1,7 @@
+{
+    "URL": "https://companyDomain.sharepoint.com/teams/SharePointInstance/",
+    "credentials": {
+        "username": "firstName.lastName@companyName.countryDomain",
+        "password": "userPassword"
+    }
+}

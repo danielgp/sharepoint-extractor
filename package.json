@@ -1,0 +1,23 @@
+{
+    "name": "sharepoint-extractor",
+    "description": "Extract information from online SharePoint using nodejs framework",
+    "version": "1.0.0", 
+    "license": "MIT",
+    "keywords": [
+        "csv",
+        "server",
+        "sharepoint"
+    ],
+    "author": {
+        "name": "Daniel Popiniuc", 
+        "email": "daniel.popiniuc@honeywell.com"
+    },
+    "dependencies": {
+        "node-sp-auth": "^1.2.0", 
+        "request-promise": "^4.1.1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/danielgp/sharepoint-extractor.git"
+    }
+}

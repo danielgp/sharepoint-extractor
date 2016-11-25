@@ -1,0 +1,68 @@
+{
+    "General": {
+        "Feedback": {
+            "FileCompletion": {
+                "ListOfLists": true,
+                "ListOfFields": true,
+                "OtherLists": true
+            },
+            "ContentAsJSON": {
+                "ListOfLists": false,
+                "ListOfFields": true,
+                "OtherLists": false
+            }
+        },
+        "ListSeparator": ";",
+        "MetadataFileName": {
+            "Lists": "_Lists",
+            "Fields": "_Fields"
+        },
+        "PathForExtracts": "./results/"
+    },
+    "SharePoint": {
+        "Filters": {
+            "Fields": {
+                "CanBeDeleted": {
+                    "BlackList": [
+                        "_OldID",
+                        "_ShortcutUrl",
+                        "_ShortcutSiteId",
+                        "_ShortcutWebId",
+                        "_ShortcutUniqueId",
+                        "Combine",
+                        "RepairDocument"
+                    ]
+                },
+                "CannotBeDeleted": {
+                    "WhiteList": [
+                        "Author",
+                        "CheckedOutUserId",
+                        "CheckoutUser",
+                        "Created",
+                        "Editor",
+                        "GUID",
+                        "ID",
+                        "Modified",
+                        "Title"
+                    ]
+                }
+            },
+            "Lists": {
+                "Hidden": {
+                    "WhiteList": [
+                        "User Information List"
+                    ]
+                },
+                "NotHidden": {
+                    "BlackList": [
+                        "Form Templates",
+                        "Site Assets",
+                        "Site Pages",
+                        "Style Library",
+                        "Workflow Tasks"
+                    ]
+                }
+            }
+        }
+    }
+}
