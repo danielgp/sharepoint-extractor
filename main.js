@@ -44,20 +44,14 @@ spauth
                         ListNameArray[counter] = item.Title;
                         counter++;
                     });
-                    // initiate MetaData for Lists
-                    var wStreamList = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Lists + '.csv', fsOptions);
-                    // headers of MetaData for Lists
-                    wStreamList.write('"' + Object.keys(dataListLight[0]).join('"' + config.General.ListSeparator + '"') + '"\n');
-                    // initiate MetaData for Fields
-                    var wStreamListFields = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Fields + '.csv', fsOptions);
-                    // headers of MetaData for Fields
-                    wStreamListFields.write('"List"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.Fields).join('"' + config.General.ListSeparator + '"') + '"\n');
-                    // parse each List
-                    dataListLight.forEach(function (crtListParameters) {
+                    var wStreamList = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Lists + '.csv', fsOptions); // initiate MetaData for Lists
+                    wStreamList.write('"' + Object.keys(dataListLight[0]).join('"' + config.General.ListSeparator + '"') + '"\n'); // headers of MetaData for Lists
+                    var wStreamListFields = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Fields + '.csv', fsOptions); // initiate MetaData for Fields
+                    wStreamListFields.write('"List"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.Fields).join('"' + config.General.ListSeparator + '"') + '"\n'); // headers of MetaData for Fields
+                    dataListLight.forEach(function (crtListParameters) { // parse each List
                         // check current List against configured BlackList and WhiteList besides considering user defined Lists
                         if (MyCustomFunctions.decideBlackListWhiteList(crtListParameters.Hidden, false, config.SharePoint.Filters.Lists.NotHidden.BlackList, true, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListParameters.Title)) {
-                            // records detail of current List
-                            wStreamList.write('"' + Object.keys(crtListParameters).map(function (x) {
+                            wStreamList.write('"' + Object.keys(crtListParameters).map(function (x) { // records detail of current List
                                 return crtListParameters[x];
                             }).join('"' + config.General.ListSeparator + '"') + '"\n');
                             // Dynamically detect structure of the list, extracting the Field names and their text to display
@@ -67,10 +61,8 @@ spauth
                                     var fieldAttributes = [];
                                     var counter = 0;
                                     dataObject.forEach(function (item) {
-                                        // check current Field against configured BlackList and WhiteList besides considering user defined Fields
-                                        var crtRecordFieldWillBeExtracted = MyCustomFunctions.decideBlackListWhiteList(item.CanBeDeleted, true, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, false, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, item.InternalName);
-                                        // for certain Lists all existing fields should be retrieved
-                                        if (config.SharePoint.Filters.Lists.Hidden.WhiteList.indexOf(crtListParameters.Title) > -1) {
+                                        var crtRecordFieldWillBeExtracted = MyCustomFunctions.decideBlackListWhiteList(item.CanBeDeleted, true, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, false, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, item.InternalName); // check current Field against configured BlackList and WhiteList besides considering user defined Fields
+                                        if (config.SharePoint.Filters.Lists.Hidden.WhiteList.indexOf(crtListParameters.Title) > -1) {  // for certain Lists all existing fields should be retrieved
                                             crtRecordFieldWillBeExtracted = true;
                                         }
                                         if (crtRecordFieldWillBeExtracted) {
@@ -80,7 +72,7 @@ spauth
                                             };
                                             counter++;
                                             var crtListField = [];
-                                            var counterF = 0
+                                            var counterF = 0;
                                             Object.keys(config.SharePoint.MetaDataOutput.Fields).forEach(function (itemF) {
                                                 crtListField[counterF] = item[config.SharePoint.MetaDataOutput.Fields[itemF]];
                                                 counterF++;
@@ -91,13 +83,12 @@ spauth
                                     // Get the actual values from current list
                                     request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions)).then(function (response) {
                                         var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListParameters.Title + '.csv', fsOptions);
-                                        // writing headers for records within current list
-                                        wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n');
+                                        wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n'); // writing headers for records within current list
                                         var dataObjectValues = response.d.results;
                                         if (Object.keys(dataObjectValues).length > 0) {
                                             dataObjectValues.forEach(function (item) {
                                                 var crtRecord = [];
-                                                var counterF = 0
+                                                var counterF = 0;
                                                 Object.keys(fieldAttributes).map(function (itemF) {
                                                     switch (fieldAttributes[itemF]['Type']) {
                                                         case 'DateTime':
@@ -113,25 +104,16 @@ spauth
                                                     }
                                                     counterF++;
                                                 });
-                                                // writing current record values
-                                                wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n');
+                                                wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n'); // writing current record values
                                             });
                                         }
-                                        wstream.end(function () {
-                                            if (config.General.Feedback.FileCompletion.OtherLists) {
-                                                console.log(crtListParameters.Title + '.csv has been completed!\n' + (config.General.Feedback.ContentAsJSON.OtherLists ? JSON.stringify(dataObjectValues) : ''));
-                                            }
-                                        });
+                                        wstream.end();
                                     });
                                 }
                             });
                         }
                     });
-                    wStreamList.end(function () {
-                        if (config.General.Feedback.FileCompletion.ListOfLists) {
-                            console.log(config.General.MetaDataFileName.Lists + '.csv has been completed!\n' + (config.General.Feedback.ContentAsJSON.ListOfLists ? JSON.stringify(dataListLight) : ''));
-                        }
-                    });
+                    wStreamList.end();
                 }
             });
         });

@@ -1,25 +1,33 @@
 {
     "General": {
-        "Feedback": {
-            "FileCompletion": {
-                "ListOfLists": true,
-                "ListOfFields": true,
-                "OtherLists": true
-            },
-            "ContentAsJSON": {
-                "ListOfLists": false,
-                "ListOfFields": true,
-                "OtherLists": false
-            }
-        },
         "ListSeparator": ";",
-        "MetadataFileName": {
+        "MetaDataFileName": {
             "Lists": "_Lists",
             "Fields": "_Fields"
         },
         "PathForExtracts": "./results/"
     },
     "SharePoint": {
+        "MetaDataOutput": {
+            "Fields": {
+                "Field Name Displayed": "Title",
+                "Field Technical Name": "StaticName",
+                "Field Type": "TypeAsString",
+                "Field Type Detailed": "TypeDisplayName",
+                "Can Be Deleted": "CanBeDeleted",
+                "Default Value": "DefaultValue",
+                "Enforce Unique Values": "EnforceUniqueValues",
+                "Filterable": "Filterable",
+                "Group": "Group",
+                "Indexed": "Indexed",
+                "Read Only": "ReadOnlyField",
+                "Required": "Required",
+                "Sortable": "Sortable",
+                "Validation Formula": "ValidationFormula",
+                "Validation Message": "ValidationMessage",
+                "GUID": "Id"
+            }
+        },
         "Filters": {
             "Fields": {
                 "CanBeDeleted": {
@@ -55,6 +63,7 @@
                 },
                 "NotHidden": {
                     "BlackList": [
+                        "Documents",
                         "Form Templates",
                         "Site Assets",
                         "Site Pages",
