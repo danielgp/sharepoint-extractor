@@ -48,28 +48,10 @@ spauth
                         ListNameArray[counter] = item.Title;
                         counter++;
                     });
-                    var wStreamList = fs.createWriteStream(config.General.PathForExtracts + config.General.MetadataFileName.Lists + '.csv', fsOptions);
-                    var wStreamListFields = fs.createWriteStream(config.General.PathForExtracts + config.General.MetadataFileName.Fields + '.csv', fsOptions);
-                    var strListFieldsHeaders = [
-                        '_List',
-                        'Field Name Displayed',
-                        'Field Technical Name',
-                        'Field Type',
-                        'Field Type Detailed',
-                        'Can Be Deleted',
-                        'Default Value',
-                        'Enforce Unique Values',
-                        'Filterable',
-                        'Group',
-                        'Indexed',
-                        'Read Only',
-                        'Required',
-                        'Sortable',
-                        'Validation Formula',
-                        'Validation Message',
-                        'GUID'
-                    ];
-                    wStreamListFields.write('"' + strListFieldsHeaders.join('"' + config.General.ListSeparator + '"') + '"\n');
+                    var wStreamList = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Lists + '.csv', fsOptions);
+                    var wStreamListFields = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Fields + '.csv', fsOptions);
+                    var inMetaDataFields = config.SharePoint.MetaDataOutput.Fields;
+                    wStreamListFields.write('"' + Object.keys(inMetaDataFields).join('"' + config.General.ListSeparator + '"') + '"\n');
                     wStreamList.write('"' + Object.keys(dataListLight[0]).join('"' + config.General.ListSeparator + '"') + '"\n');
                     dataListLight.forEach(function (crtListParameters) {
                         var crtListName = crtListParameters.Title;
@@ -102,26 +84,13 @@ spauth
                                             fieldsArray[counter] = item.StaticName;
                                             fieldsTypeArray[counter] = item.TypeAsString;
                                             counter++;
-                                            var crtListField = [
-                                                crtListName,
-                                                item.Title,
-                                                item.StaticName,
-                                                item.TypeAsString,
-                                                item.TypeDisplayName,
-                                                item.CanBeDeleted,
-                                                item.DefaultValue,
-                                                item.EnforceUniqueValues,
-                                                item.Filterable,
-                                                item.Group,
-                                                item.Indexed,
-                                                item.ReadOnlyField,
-                                                item.Required,
-                                                item.Sortable,
-                                                item.ValidationFormula,
-                                                item.ValidationMessage,
-                                                item.Id
-                                            ];
-                                            wStreamListFields.write('"' + crtListField.join('"' + config.General.ListSeparator + '"') + '"\n');
+                                            var crtListField = [];
+                                            var counterF = 0
+                                            Object.keys(inMetaDataFields).forEach(function (itemF) {
+                                                crtListField[counterF] = item[inMetaDataFields[itemF]];
+                                                counterF++;
+                                            });
+                                            wStreamListFields.write('"' + crtListName + '"' + config.General.ListSeparator + '"' + crtListField.join('"' + config.General.ListSeparator + '"') + '"\n');
                                         }
                                     });
                                     // Get the actual values from current list
@@ -177,7 +146,7 @@ spauth
                     });
                     wStreamList.end(function () {
                         if (config.General.Feedback.FileCompletion.ListOfLists) {
-                            console.log(config.General.MetadataFileName.Lists + '.csv has been completed!\n' + (config.General.Feedback.ContentAsJSON.ListOfLists ? JSON.stringify(dataListLight) : ''));
+                            console.log(config.General.MetaDataFileName.Lists + '.csv has been completed!\n' + (config.General.Feedback.ContentAsJSON.ListOfLists ? JSON.stringify(dataListLight) : ''));
                         }
                     });
                 }

@@ -1,7 +1,7 @@
 {
     "name": "sharepoint-extractor",
     "description": "Extract information from online SharePoint using nodejs framework",
-    "version": "1.0.4", 
+    "version": "1.0.5", 
     "license": "MIT",
     "keywords": [
         "csv",
