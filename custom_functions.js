@@ -1,17 +1,12 @@
 
 module.exports = {
     decideBlackListWhiteList: function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
-        var outResultBoolean = false;
-        if (inDecisionValue === inEvaluatedValueForBlackList) {
-            if (inBlackListArray.indexOf(inValueToEvaluate) === -1) {
-                outResultBoolean = true;
-            }
-        } else if (inDecisionValue === inEvaluatedValueForWhiteList) {
-            if (inWhiteListArray.indexOf(inValueToEvaluate) > -1) {
-                outResultBoolean = true;
-            }
+        if ((inDecisionValue === inEvaluatedValueForBlackList) && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) {
+            return true;
         }
-        return outResultBoolean;
+        if ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1)) {
+            return true;
+        }
     },
     buildRequestQuery: function (targetSharePointURL, crtListName, queryType, headerOptions) {
         var queryPrefix = '';
