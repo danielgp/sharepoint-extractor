@@ -9,6 +9,17 @@ module.exports = {
         }
         return false;
     },
+    buildCurrentListAttributeValues: function (inObjectListsConfiguredAttributes, inCurrentList) {
+        var crtListAttributes = [];
+        Object.keys(inObjectListsConfiguredAttributes).map(function (itemList) {
+            if (itemList.substring(0, 4) === 'Date') {
+                crtListAttributes[itemList] = inCurrentList[inObjectListsConfiguredAttributes[itemList]].replace('T', ' ').replace('Z', '');
+            } else {
+                crtListAttributes[itemList] = inCurrentList[inObjectListsConfiguredAttributes[itemList]];
+            }
+        });
+        return crtListAttributes;
+    },
     buildRequestQuery: function (targetSharePointURL, crtListName, queryType, headerOptions) {
         var queryPrefix = '';
         if ((queryType === 'Fields') || (queryType === 'Items')) {

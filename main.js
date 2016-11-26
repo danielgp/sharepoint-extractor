@@ -23,24 +23,7 @@ spauth
                     var dataListLight = [];
                     var counter = 0;
                     dataObjectLists.forEach(function (item) {
-                        dataListLight[counter] = {
-                            'Created': item.Created.replace('T', ' ').replace('Z', ''),
-                            'Description': item.Description,
-                            'EnableAttachments': item.EnableAttachments,
-                            'EnableFolderCreation': item.EnableFolderCreation,
-                            'EnableVersioning': item.EnableVersioning,
-                            'Hidden': item.Hidden,
-                            'Id': item.Id,
-                            'IsPrivate': item.IsPrivate,
-                            'ItemCount': item.ItemCount,
-                            'LastItemDeletedDate': item.LastItemDeletedDate.replace('T', ' ').replace('Z', ''),
-                            'LastItemModifiedDate': item.LastItemModifiedDate.replace('T', ' ').replace('Z', ''),
-                            'LastItemUserModifiedDate': item.LastItemUserModifiedDate.replace('T', ' ').replace('Z', ''),
-                            'MajorVersionLimit': item.MajorVersionLimit,
-                            'NoCrawl': item.NoCrawl,
-                            'ParserDisabled': item.ParserDisabled,
-                            'Title': item.Title
-                        };
+                        dataListLight[counter] = MyCustomFunctions.buildCurrentListAttributeValues(config.SharePoint.MetaDataOutput.Lists, item);
                         ListNameArray[counter] = item.Title;
                         counter++;
                     });
@@ -83,7 +66,7 @@ spauth
                                     // Get the actual values from current list
                                     request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions)).then(function (response) {
                                         var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListParameters.Title + '.csv', fsOptions);
-                                        wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n'); // writing headers for records within current list
+                                        wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters['Versioning Enabled'] ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n'); // writing headers for records within current list
                                         var dataObjectValues = response.d.results;
                                         if (Object.keys(dataObjectValues).length > 0) {
                                             dataObjectValues.forEach(function (item) {
@@ -104,7 +87,7 @@ spauth
                                                     }
                                                     counterF++;
                                                 });
-                                                wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n'); // writing current record values
+                                                wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + (crtListParameters['Versioning Enabled'] ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n'); // writing current record values
                                             });
                                         }
                                         wstream.end();

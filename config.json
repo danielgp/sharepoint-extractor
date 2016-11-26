@@ -26,6 +26,24 @@
                 "Validation Formula": "ValidationFormula",
                 "Validation Message": "ValidationMessage",
                 "GUID": "Id"
+            },
+            "Lists": {
+                "Id": "Id",
+                "Title": "Title",
+                "Description": "Description",
+                "Records": "ItemCount",
+                "Attachments Enabled": "EnableAttachments",
+                "Folder Creation Enabled": "EnableFolderCreation",
+                "Versioning Enabled": "EnableVersioning",
+                "Hidden": "Hidden",
+                "Is Private": "IsPrivate",
+                "Date of List Creation": "Created",
+                "Date of Last Item Deletion": "LastItemDeletedDate",
+                "Date of Last Item Modification": "LastItemModifiedDate",
+                "Date of Last Item User Modification": "LastItemUserModifiedDate",
+                "Version Major Limit": "MajorVersionLimit",
+                "No Crawl": "NoCrawl",
+                "Parser Disabled": "ParserDisabled"
             }
         },
         "Filters": {
