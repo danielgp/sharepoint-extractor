@@ -102,12 +102,9 @@ spauth
                                         var fieldsLength = fieldsArray.length;
                                         // output to file only if detectable fields are in scope
                                         if (fieldsLength > 0) {
-                                            var wstream = fs.createWriteStream('./results/' + crtListName + '.csv', fsOptions);
-                                            if (crtListParameters.EnableVersioning) {
-                                                headersArray.push('Version');
-                                            }
+                                            var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListName + '.csv', fsOptions);
                                             // writing headers for records within current list
-                                            wstream.write('"' + headersArray.join('"' + config.General.ListSeparator + '"') + '"\n');
+                                            wstream.write('"' + headersArray.join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n');
                                             var dataObjectValues = response.d.results;
                                             if (Object.keys(dataObjectValues).length > 0) {
                                                 dataObjectValues.forEach(function (item) {
@@ -126,11 +123,8 @@ spauth
                                                                 break;
                                                         }
                                                     }
-                                                    if (crtListParameters.EnableVersioning) {
-                                                        crtRecord[counterF] = item.OData__UIVersionString;
-                                                    }
                                                     // writing current record values
-                                                    wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + '"\n');
+                                                    wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n');
                                                 });
                                             }
                                             wstream.end(function () {
