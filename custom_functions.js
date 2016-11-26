@@ -14,6 +14,24 @@ var MyCustomFunctions = function () {
         }
         return outResultBoolean;
     };
+    self.buildRequestQuery = function (targetSharePointURL, crtListName, queryType, headerOptions) {
+        var queryPrefix = '';
+        switch (queryType) {
+            case 'Fields':
+            case 'Items':
+                queryPrefix = '_api/web/lists/GetByTitle(\'' + crtListName + '\')/' + queryType;
+                break;
+            case 'Lists':
+            default:
+                queryPrefix = '_api/web/Lists';
+                break;
+        }
+        return {
+            url: targetSharePointURL + queryPrefix,
+            headers: headerOptions,
+            json: true
+        };
+    };
 };
 
 module.exports = MyCustomFunctions;

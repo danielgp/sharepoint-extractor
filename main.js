@@ -18,11 +18,7 @@ spauth
             var headerOptions = data.headers;
             headerOptions['Accept'] = 'application/json;odata=verbose';
             var ListNameArray = [];
-            request.get({
-                url: targetSharePoint.URL + '_api/web/Lists',
-                headers: headerOptions,
-                json: true
-            }).then(function (response) {
+            request.get(myFunctions.buildRequestQuery(targetSharePoint.URL, '', 'Lists', headerOptions)).then(function (response) {
                 var dataObjectLists = response.d.results;
                 if (Object.keys(dataObjectLists).length > 0) {
                     var dataListLight = [];
@@ -66,11 +62,7 @@ spauth
                                 return crtListParameters[x];
                             }).join('"' + config.General.ListSeparator + '"') + '"\n');
                             // Dynamically detect structure of the list, extracting the Field names and their text to display
-                            request.get({
-                                url: targetSharePoint.URL + '_api/web/lists/GetByTitle(\'' + crtListParameters.Title + '\')/Fields',
-                                headers: headerOptions,
-                                json: true
-                            }).then(function (response) {
+                            request.get(myFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Fields', headerOptions)).then(function (response) {
                                 var dataObject = response.d.results;
                                 if (Object.keys(dataObject).length > 0) {
                                     var fieldAttributes = [];
@@ -97,11 +89,7 @@ spauth
                                         }
                                     });
                                     // Get the actual values from current list
-                                    request.get({
-                                        url: targetSharePoint.URL + '_api/web/lists/GetByTitle(\'' + crtListParameters.Title + '\')/Items',
-                                        headers: headerOptions,
-                                        json: true
-                                    }).then(function (response) {
+                                    request.get(myFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions)).then(function (response) {
                                         var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListParameters.Title + '.csv', fsOptions);
                                         // writing headers for records within current list
                                         wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n');
