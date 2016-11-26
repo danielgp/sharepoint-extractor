@@ -3,7 +3,6 @@ var request = require('request-promise');
 var config = require('./config.json');
 var targetSharePoint = require('./targetSharePoint.json');
 var MyCustomFunctions = require('./custom_functions.js');
-var myFunctions = new MyCustomFunctions();
 var fs = require('fs');
 
 spauth
@@ -18,7 +17,7 @@ spauth
             var headerOptions = data.headers;
             headerOptions['Accept'] = 'application/json;odata=verbose';
             var ListNameArray = [];
-            request.get(myFunctions.buildRequestQuery(targetSharePoint.URL, '', 'Lists', headerOptions)).then(function (response) {
+            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, '', 'Lists', headerOptions)).then(function (response) {
                 var dataObjectLists = response.d.results;
                 if (Object.keys(dataObjectLists).length > 0) {
                     var dataListLight = [];
@@ -56,19 +55,20 @@ spauth
                     // parse each List
                     dataListLight.forEach(function (crtListParameters) {
                         // check current List against configured BlackList and WhiteList besides considering user defined Lists
-                        if (myFunctions.decideBlackListWhiteList(crtListParameters.Hidden, false, config.SharePoint.Filters.Lists.NotHidden.BlackList, true, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListParameters.Title)) {
+                        if (MyCustomFunctions.decideBlackListWhiteList(crtListParameters.Hidden, false, config.SharePoint.Filters.Lists.NotHidden.BlackList, true, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListParameters.Title)) {
                             // records detail of current List
                             wStreamList.write('"' + Object.keys(crtListParameters).map(function (x) {
                                 return crtListParameters[x];
                             }).join('"' + config.General.ListSeparator + '"') + '"\n');
                             // Dynamically detect structure of the list, extracting the Field names and their text to display
-                            request.get(myFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Fields', headerOptions)).then(function (response) {
+                            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Fields', headerOptions)).then(function (response) {
                                 var dataObject = response.d.results;
                                 if (Object.keys(dataObject).length > 0) {
                                     var fieldAttributes = [];
                                     var counter = 0;
                                     dataObject.forEach(function (item) {
-                                        var crtRecordFieldWillBeExtracted = myFunctions.decideBlackListWhiteList(item.CanBeDeleted, true, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, false, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, item.InternalName);
+                                        // check current Field against configured BlackList and WhiteList besides considering user defined Fields
+                                        var crtRecordFieldWillBeExtracted = MyCustomFunctions.decideBlackListWhiteList(item.CanBeDeleted, true, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, false, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, item.InternalName);
                                         // for certain Lists all existing fields should be retrieved
                                         if (config.SharePoint.Filters.Lists.Hidden.WhiteList.indexOf(crtListParameters.Title) > -1) {
                                             crtRecordFieldWillBeExtracted = true;
@@ -89,7 +89,7 @@ spauth
                                         }
                                     });
                                     // Get the actual values from current list
-                                    request.get(myFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions)).then(function (response) {
+                                    request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions)).then(function (response) {
                                         var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListParameters.Title + '.csv', fsOptions);
                                         // writing headers for records within current list
                                         wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters.EnableVersioning ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n');
