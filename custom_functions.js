@@ -7,6 +7,7 @@ module.exports = {
         if ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1)) {
             return true;
         }
+        return false;
     },
     buildRequestQuery: function (targetSharePointURL, crtListName, queryType, headerOptions) {
         var queryPrefix = '';
