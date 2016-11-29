@@ -1,7 +1,15 @@
 {
     "URL": "https://companyDomain.sharepoint.com/teams/SharePointInstance/",
-    "credentials": {
-        "username": "firstName.lastName@companyName.countryDomain",
-        "password": "userPassword"
+    "authentication": {
+        "credentials_Addin": {
+            "clientId": "GUIDvalue",
+            "clientSecret": "secretValue",
+            "realm": "realmValue"
+        },
+        "credentials_SAML": {
+            "username": "firstName.lastName@companyName.countryDomain",
+            "password": "userPassword"
+        },
+        "type": "SAML"
     }
 }

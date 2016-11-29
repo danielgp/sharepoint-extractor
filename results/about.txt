@@ -1,0 +1,4 @@
+This is just a file to explain reason for this folder existance!
+
+As per default configuration the folder where the resulted CSV file will be stored is "results" sub-folder within the application path.
+Of course, should you, the user, prefer another more convenient location feel free to customize it to your preference!
