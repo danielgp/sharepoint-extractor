@@ -6,10 +6,7 @@ var MyCustomFunctions = require('./custom_functions.js');
 var fs = require('fs');
 
 spauth
-        .getAuth(targetSharePoint.URL, {
-            username: targetSharePoint.credentials.username,
-            password: targetSharePoint.credentials.password
-        })
+        .getAuth(targetSharePoint.URL, MyCustomFunctions.buildAuthenticationHeader(targetSharePoint.authentication))
         .then(function (data) {
             var fsOptions = {
                 encoding: 'utf8'
@@ -64,7 +61,7 @@ spauth
                                         }
                                     });
                                     // Get the actual values from current list
-                                    request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions)).then(function (response) {
+                                    request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions, crtListParameters.Records)).then(function (response) {
                                         var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListParameters.Title + '.csv', fsOptions);
                                         wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters['Versioning Enabled'] ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n'); // writing headers for records within current list
                                         var dataObjectValues = response.d.results;
@@ -75,7 +72,11 @@ spauth
                                                 Object.keys(fieldAttributes).map(function (itemF) {
                                                     switch (fieldAttributes[itemF]['Type']) {
                                                         case 'DateTime':
-                                                            crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']].replace('T', ' ').replace('Z', '');
+                                                            if (item[fieldAttributes[itemF]['Technical Name']] === null) {
+                                                                crtRecord[counterF] = '';
+                                                            } else {
+                                                                crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']].replace('T', ' ').replace('Z', '');
+                                                            }
                                                             break;
                                                         case 'Lookup':
                                                         case 'User':
