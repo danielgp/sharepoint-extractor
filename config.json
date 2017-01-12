@@ -30,6 +30,8 @@
             "Lists": {
                 "Id": "Id",
                 "Title": "Title",
+                "Entity Type Name": "EntityTypeName",
+                "List Item Entity Type Full Name": "ListItemEntityTypeFullName",
                 "Description": "Description",
                 "Records": "ItemCount",
                 "Attachments Enabled": "EnableAttachments",
@@ -82,11 +84,17 @@
                 "NotHidden": {
                     "BlackList": [
                         "Documents",
+                        "Drop Off Library",
                         "Form Templates",
+                        "MicroFeed",
+                        "Power BI",
+                        "Published Feed List",
+                        "Reporting",
+                        "Shared Documents",
                         "Site Assets",
+                        "Site Certification",
                         "Site Pages",
-                        "Style Library",
-                        "Workflow Tasks"
+                        "Style Library"
                     ]
                 }
             }
