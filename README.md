@@ -28,6 +28,7 @@ Windows 10 Enterprise | 1511 | 10586.769 | 25th of November 2016
 nodeJS | npm | Date
 ------ | --- | ----
 6.9.1 LTS 64-bit | 3.10.8 | 25th of November 2016
+7.4.0 LTS 64-bit | 4.0.5 | 29th of January 2017
 
 SharePoint | Date
 ---------- | ----
