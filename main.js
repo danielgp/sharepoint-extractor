@@ -17,6 +17,8 @@ spauth
             request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, '', 'Lists', headerOptions)).then(function (response) {
                 var dataObjectLists = response.d.results;
                 if (Object.keys(dataObjectLists).length > 0) {
+                    var wStreamListViews = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Views + '.csv', fsOptions); // initiate MetaData for Views
+                    wStreamListViews.write('"List Name"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.Views).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Views
                     var dataListLight = [];
                     var counter = 0;
                     dataObjectLists.forEach(function (item) {
@@ -95,9 +97,60 @@ spauth
                                     });
                                 }
                             });
+                            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Views', headerOptions)).then(function (responseViews) {
+                                var dataViewObject = responseViews.d.results;
+                                if (Object.keys(dataViewObject).length > 0) {
+                                    dataViewObject.forEach(function (crtView) {
+                                        var crtRecordView = [];
+                                        var counterV = 0;
+                                        Object.keys(config.SharePoint.MetaDataOutput.Views).map(function (itemV) {
+                                            if (config.SharePoint.MetaDataOutput.Views[itemV] === 'HtmlSchemaXml') {
+                                                crtRecordView[counterV] = JSON.stringify(crtView[config.SharePoint.MetaDataOutput.Views[itemV]]);
+                                            } else {
+                                                crtRecordView[counterV] = crtView[config.SharePoint.MetaDataOutput.Views[itemV]];
+                                            }
+                                            counterV++;
+                                        });
+                                        wStreamListViews.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + crtRecordView.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
+                                    });
+                                }
+                            });
                         }
                     });
                     wStreamList.end();
+                }
+            });
+            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, '', 'SiteGroups', headerOptions)).then(function (response) {
+                var dataObjectValues = response.d.results;
+                if (Object.keys(dataObjectValues).length > 0) {
+                    var wStreamGroups = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroups + '.csv', fsOptions); // initiate MetaData for Groups
+                    wStreamGroups.write('"' + Object.keys(config.SharePoint.MetaDataOutput.SiteGroups).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Groups
+                    var wStreamGroupMembers = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroupMembers + '.csv', fsOptions); // initiate MetaData for Group Members
+                    wStreamGroupMembers.write('"Group"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.SiteGroupMembers).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Group Members
+                    dataObjectValues.forEach(function (crtItemGroup) {
+                        var crtRecord = [];
+                        var counterG = 0;
+                        Object.keys(config.SharePoint.MetaDataOutput.SiteGroups).map(function (itemG) {
+                            crtRecord[counterG] = crtItemGroup[config.SharePoint.MetaDataOutput.SiteGroups[itemG]];
+                            counterG++;
+                        });
+                        wStreamGroups.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
+                        request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtItemGroup.Id, 'GroupMembers', headerOptions)).then(function (responseMembers) {
+                            var dataObjectMemberValues = responseMembers.d.results;
+                            if (Object.keys(dataObjectMemberValues).length > 0) {
+                                dataObjectMemberValues.forEach(function (crtItemGroupMember) {
+                                    var crtRecordGM = [];
+                                    var counterGM = 0;
+                                    Object.keys(config.SharePoint.MetaDataOutput.SiteGroupMembers).map(function (itemGM) {
+                                        crtRecordGM[counterGM] = crtItemGroupMember[config.SharePoint.MetaDataOutput.SiteGroupMembers[itemGM]];
+                                        counterGM++;
+                                    });
+                                    wStreamGroupMembers.write('"' + crtItemGroup.Title + '"' + config.General.ListSeparator + '"' + crtRecordGM.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
+                                });
+                            }
+                        });
+                    });
+                    wStreamGroups.end();
                 }
             });
         });

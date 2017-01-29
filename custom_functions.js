@@ -28,8 +28,14 @@ module.exports = {
             case 'Fields':
                 queryPrefix = '_api/Web/lists/GetByTitle(\'' + crtListName + '\')/' + queryType;
                 break;
+            case 'GroupMembers':
+                queryPrefix = '_api/Web/SiteGroups/GetById(' + crtListName + ')/Users';
+                break;
             case 'Items':
                 queryPrefix = '_api/Web/lists/GetByTitle(\'' + crtListName + '\')/' + queryType + '?$top=' + maxRecords;
+                break;
+            case 'Views':
+                queryPrefix = '_api/Web/lists/GetByTitle(\'' + crtListName + '\')/' + queryType;
                 break;
             default:
                 queryPrefix = '_api/Web/' + queryType;

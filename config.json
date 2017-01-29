@@ -2,8 +2,11 @@
     "General": {
         "ListSeparator": ";",
         "MetaDataFileName": {
+            "Fields": "_Fields",
             "Lists": "_Lists",
-            "Fields": "_Fields"
+            "SiteGroups": "_Groups",
+            "SiteGroupMembers": "_GroupMembers",
+            "Views": "_Views"
         },
         "PathForExtracts": "./results/"
     },
@@ -46,6 +49,48 @@
                 "Version Major Limit": "MajorVersionLimit",
                 "No Crawl": "NoCrawl",
                 "Parser Disabled": "ParserDisabled"
+            },
+            "SiteGroups": {
+                "Group Id": "Id",
+                "Hidden Output": "IsHiddenInUI",
+                "Group Name": "Title",
+                "Group Description": "Description",
+                "Group Owner": "OwnerTitle",
+                "Members Can Edit Membership": "AllowMembersEditMembership",
+                "Members Can View Membership": "OnlyAllowMembersViewMembership",
+                "Join or Leave Email Address": "RequestToJoinLeaveEmailSetting",
+                "Allow Join or Leave Request": "AllowRequestToJoinLeave",
+                "Allow Join or Leave Accept": "AutoAcceptRequestToJoinLeave"
+            },
+            "SiteGroupMembers": {
+                "User Id": "Id",
+                "User Full Name": "Title",
+                "User Email": "Email",
+                "User is an Site Administrator": "IsSiteAdmin",
+                "User is Share By Email Guest": "IsShareByEmailGuestUser",
+                "User is Hidden within UI": "IsHiddenInUI"
+            },
+            "Views": {
+                "View Id": "Id",
+                "View Image URL": "ImageUrl",
+                "View Name": "Title",
+                "View URL": "ServerRelativeUrl",
+                "Aggregations Details": "Aggregations",
+                "Aggregations Status": "AggregationsStatus",
+                "Base View Id": "BaseViewId",
+                "View Is Default": "DefaultView",
+                "Mobile View": "MobileView",
+                "Mobile Default View": "MobileDefaultView",
+                "Editor Modified": "EditorModified",
+                "Formats": "Formats",
+                "Hidden": "Hidden",
+                "View is Sorted": "OrderedView",
+                "View is Paged": "Paged",
+                "No. of Records per Page": "RowLimit",
+                "View is Personal": "PersonalView",
+                "View Protected Fields": "ViewProjectedFields",
+                "View is Read-Only": "ReadOnlyView",
+                "HTML Schema XML": "HtmlSchemaXml"
             }
         },
         "Filters": {
