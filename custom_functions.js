@@ -1,15 +1,19 @@
 
 module.exports = {
     buildAuthenticationHeader: function (inAuthenticationArray) {
+        var aReturn;
         switch (inAuthenticationArray.type) {
             case 'Addin':
-                return inAuthenticationArray.credentials_Addin;
+                aReturn = inAuthenticationArray.credentials_Addin;
                 break;
             case 'SAML':
-                return inAuthenticationArray.credentials_SAML;
+                aReturn = inAuthenticationArray.credentials_SAML;
+                break;
+            default:
+                aReturn = false;
                 break;
         }
-        return false;
+        return aReturn;
     },
     buildCurrentListAttributeValues: function (inObjectListsConfiguredAttributes, inCurrentList) {
         var crtListAttributes = [];
@@ -26,8 +30,59 @@ module.exports = {
         });
         return crtListAttributes;
     },
-    buildRequestQuery: function (targetSharePointURL, crtListName, queryType, headerOptions, maxRecords) {
-        var arStandardLists = {
+    buildCurrentItemValues: function (fieldAttributes, item) {
+        var crtRecord = [];
+        var counterF = 0;
+        Object.keys(fieldAttributes).map(function (itemF) {
+            switch (fieldAttributes[itemF]['Type']) {
+                case 'DateTime':
+                    if (item[fieldAttributes[itemF]['Technical Name']] === null) {
+                        crtRecord[counterF] = '';
+                    } else {
+                        crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']].replace('T', ' ').replace('Z', '');
+                    }
+                    break;
+                case 'Lookup':
+                case 'User':
+                    crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name'] + 'Id'];
+                    break;
+                default:
+                    crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']];
+                    break;
+            }
+            counterF++;
+        });
+        return crtRecord;
+    },
+    buildRequestQuery: function (targetSharePointURL, arStandardLists, crtListName, queryType, inData) {
+        var queryPrefix = '';
+        if (Object.keys(arStandardLists).indexOf(queryType) > -1) {
+            queryPrefix = '_api/Web/' + arStandardLists[queryType]['WebAPItrunk']
+                    + '/' + arStandardLists[queryType]['WebAPIdeterminationFunction'] + '(\''
+                    + crtListName + '\')/' + arStandardLists[queryType]['WebAPIdeterminationElement'];
+        } else {
+            queryPrefix = '_api/Web/' + queryType;
+        }
+        var headerOptions = inData.headers;
+        headerOptions['Accept'] = 'application/json;odata=verbose';
+        return {
+            url: targetSharePointURL + queryPrefix,
+            headers: headerOptions,
+            json: true
+        };
+    },
+    decideBlackListWhiteList: function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
+        var bolReturn = false;
+        if ((inDecisionValue === inEvaluatedValueForBlackList) && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) {
+            bolReturn = true;
+        }
+        if ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1)) {
+            bolReturn = true;
+        }
+        return bolReturn;
+    },
+    internalQueryStructureArray: function (maxRecords) {
+        return {
             'Fields': {
                 'WebAPItrunk': 'Lists',
                 'WebAPIdeterminationFunction': 'GetByTitle',
@@ -49,34 +104,5 @@ module.exports = {
                 'WebAPIdeterminationElement': 'Views'
             }
         };
-        var queryPrefix = '';
-        if (Object.keys(arStandardLists).indexOf(queryType) > -1) {
-            queryPrefix = '_api/Web/' + arStandardLists[queryType]['WebAPItrunk']
-                    + '/' + arStandardLists[queryType]['WebAPIdeterminationFunction'] + '(\''
-                    + crtListName + '\')/' + arStandardLists[queryType]['WebAPIdeterminationElement'];
-        } else {
-            queryPrefix = '_api/Web/' + queryType;
-        }
-        return {
-            url: targetSharePointURL + queryPrefix,
-            headers: headerOptions,
-            json: true
-        };
-    },
-    decideBlackListWhiteList: function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
-        var bolReturn = false;
-        switch (inDecisionValue) {
-            case inEvaluatedValueForBlackList:
-                if (inBlackListArray.indexOf(inValueToEvaluate) === -1) {
-                    bolReturn = true;
-                }
-                break;
-            case inEvaluatedValueForWhiteList:
-                if (inWhiteListArray.indexOf(inValueToEvaluate) > -1) {
-                    bolReturn = true;
-                }
-                break;
-        }
-        return bolReturn;
     }
 };

@@ -8,16 +8,12 @@ var fs = require('fs');
 spauth
         .getAuth(targetSharePoint.URL, MyCustomFunctions.buildAuthenticationHeader(targetSharePoint.authentication))
         .then(function (data) {
-            var fsOptions = {
-                encoding: 'utf8'
-            };
-            var headerOptions = data.headers;
-            headerOptions['Accept'] = 'application/json;odata=verbose';
+            var internalQueryStructureGeneric = MyCustomFunctions.internalQueryStructureArray(0);
             var ListNameArray = [];
-            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, '', 'Lists', headerOptions)).then(function (response) {
+            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, '', 'Lists', data)).then(function (response) {
                 var dataObjectLists = response.d.results;
                 if (Object.keys(dataObjectLists).length > 0) {
-                    var wStreamListViews = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Views + '.csv', fsOptions); // initiate MetaData for Views
+                    var wStreamListViews = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Views + '.csv', {encoding: 'utf8'}); // initiate MetaData for Views
                     wStreamListViews.write('"List Name"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.Views).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Views
                     var dataListLight = [];
                     var counter = 0;
@@ -26,18 +22,16 @@ spauth
                         ListNameArray[counter] = item.Title;
                         counter++;
                     });
-                    var wStreamList = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Lists + '.csv', fsOptions); // initiate MetaData for Lists
+                    var wStreamList = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Lists + '.csv', {encoding: 'utf8'}); // initiate MetaData for Lists
                     wStreamList.write('"' + Object.keys(dataListLight[0]).join('"' + config.General.ListSeparator + '"') + '"\n'); // headers of MetaData for Lists
-                    var wStreamListFields = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Fields + '.csv', fsOptions); // initiate MetaData for Fields
+                    var wStreamListFields = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Fields + '.csv', {encoding: 'utf8'}); // initiate MetaData for Fields
                     wStreamListFields.write('"List"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.Fields).join('"' + config.General.ListSeparator + '"') + '"\n'); // headers of MetaData for Fields
                     dataListLight.forEach(function (crtListParameters) { // parse each List
-                        // check current List against configured BlackList and WhiteList besides considering user defined Lists
-                        if (MyCustomFunctions.decideBlackListWhiteList(crtListParameters.Hidden, false, config.SharePoint.Filters.Lists.NotHidden.BlackList, true, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListParameters.Title)) {
+                        if (MyCustomFunctions.decideBlackListWhiteList(crtListParameters.Hidden, false, config.SharePoint.Filters.Lists.NotHidden.BlackList, true, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListParameters.Title)) { // check current List against configured BlackList and WhiteList besides considering user defined Lists
                             wStreamList.write('"' + Object.keys(crtListParameters).map(function (x) { // records detail of current List
                                 return crtListParameters[x];
                             }).join('"' + config.General.ListSeparator + '"') + '"\n');
-                            // Dynamically detect structure of the list, extracting the Field names and their text to display
-                            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Fields', headerOptions)).then(function (response) {
+                            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, crtListParameters.Title, 'Fields', data)).then(function (response) { // Dynamically detect structure of the list, extracting the Field names and their text to display
                                 var dataObject = response.d.results;
                                 if (Object.keys(dataObject).length > 0) {
                                     var fieldAttributes = [];
@@ -62,34 +56,14 @@ spauth
                                             wStreamListFields.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + crtListField.join('"' + config.General.ListSeparator + '"') + '"\n');
                                         }
                                     });
-                                    // Get the actual values from current list
-                                    request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Items', headerOptions, crtListParameters.Records)).then(function (response) {
-                                        var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListParameters.Title + '.csv', fsOptions);
+                                    var internalQueryStructureItem = MyCustomFunctions.internalQueryStructureArray(crtListParameters.Records);
+                                    request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureItem, crtListParameters.Title, 'Items', data)).then(function (response) { // Get the actual values from current list
+                                        var wstream = fs.createWriteStream(config.General.PathForExtracts + crtListParameters.Title + '.csv', {encoding: 'utf8'});
                                         wstream.write('"' + Object.keys(fieldAttributes).join('"' + config.General.ListSeparator + '"') + (crtListParameters['Versioning Enabled'] ? '"' + config.General.ListSeparator + '"Version' : '') + '"\n'); // writing headers for records within current list
                                         var dataObjectValues = response.d.results;
                                         if (Object.keys(dataObjectValues).length > 0) {
                                             dataObjectValues.forEach(function (item) {
-                                                var crtRecord = [];
-                                                var counterF = 0;
-                                                Object.keys(fieldAttributes).map(function (itemF) {
-                                                    switch (fieldAttributes[itemF]['Type']) {
-                                                        case 'DateTime':
-                                                            if (item[fieldAttributes[itemF]['Technical Name']] === null) {
-                                                                crtRecord[counterF] = '';
-                                                            } else {
-                                                                crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']].replace('T', ' ').replace('Z', '');
-                                                            }
-                                                            break;
-                                                        case 'Lookup':
-                                                        case 'User':
-                                                            crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name'] + 'Id'];
-                                                            break;
-                                                        default:
-                                                            crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']];
-                                                            break;
-                                                    }
-                                                    counterF++;
-                                                });
+                                                var crtRecord = MyCustomFunctions.buildCurrentItemValues(fieldAttributes, item);
                                                 wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + (crtListParameters['Versioning Enabled'] ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n'); // writing current record values
                                             });
                                         }
@@ -97,7 +71,7 @@ spauth
                                     });
                                 }
                             });
-                            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtListParameters.Title, 'Views', headerOptions)).then(function (responseViews) {
+                            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, crtListParameters.Title, 'Views', data)).then(function (responseViews) {
                                 var dataViewObject = responseViews.d.results;
                                 if (Object.keys(dataViewObject).length > 0) {
                                     dataViewObject.forEach(function (crtView) {
@@ -120,12 +94,12 @@ spauth
                     wStreamList.end();
                 }
             });
-            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, '', 'SiteGroups', headerOptions)).then(function (response) {
+            request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, '', 'SiteGroups', data)).then(function (response) {
                 var dataObjectValues = response.d.results;
                 if (Object.keys(dataObjectValues).length > 0) {
-                    var wStreamGroups = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroups + '.csv', fsOptions); // initiate MetaData for Groups
+                    var wStreamGroups = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroups + '.csv', {encoding: 'utf8'}); // initiate MetaData for Groups
                     wStreamGroups.write('"' + Object.keys(config.SharePoint.MetaDataOutput.SiteGroups).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Groups
-                    var wStreamGroupMembers = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroupMembers + '.csv', fsOptions); // initiate MetaData for Group Members
+                    var wStreamGroupMembers = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroupMembers + '.csv', {encoding: 'utf8'}); // initiate MetaData for Group Members
                     wStreamGroupMembers.write('"Group"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.SiteGroupMembers).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Group Members
                     dataObjectValues.forEach(function (crtItemGroup) {
                         var crtRecord = [];
@@ -135,7 +109,7 @@ spauth
                             counterG++;
                         });
                         wStreamGroups.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
-                        request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, crtItemGroup.Id, 'GroupMembers', headerOptions)).then(function (responseMembers) {
+                        request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, crtItemGroup.Id, 'GroupMembers', data)).then(function (responseMembers) {
                             var dataObjectMemberValues = responseMembers.d.results;
                             if (Object.keys(dataObjectMemberValues).length > 0) {
                                 dataObjectMemberValues.forEach(function (crtItemGroupMember) {
