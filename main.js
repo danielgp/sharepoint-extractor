@@ -9,6 +9,7 @@ spauth
         .getAuth(targetSharePoint.URL, MyCustomFunctions.buildAuthenticationHeader(targetSharePoint.authentication))
         .then(function (data) {
             var internalQueryStructureGeneric = MyCustomFunctions.internalQueryStructureArray(0);
+            console.log('internalQueryStructureArray: ' + JSON.stringify(internalQueryStructureGeneric));
             var ListNameArray = [];
             request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, '', 'Lists', data)).then(function (response) {
                 var dataObjectLists = response.d.results;
@@ -47,12 +48,7 @@ spauth
                                                 'Type': item.TypeAsString
                                             };
                                             counter++;
-                                            var crtListField = [];
-                                            var counterF = 0;
-                                            Object.keys(config.SharePoint.MetaDataOutput.Fields).forEach(function (itemF) {
-                                                crtListField[counterF] = item[config.SharePoint.MetaDataOutput.Fields[itemF]];
-                                                counterF++;
-                                            });
+                                            var crtListField = MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.Fields, item);
                                             wStreamListFields.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + crtListField.join('"' + config.General.ListSeparator + '"') + '"\n');
                                         }
                                     });
@@ -102,23 +98,13 @@ spauth
                     var wStreamGroupMembers = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroupMembers + '.csv', {encoding: 'utf8'}); // initiate MetaData for Group Members
                     wStreamGroupMembers.write('"Group"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.SiteGroupMembers).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Group Members
                     dataObjectValues.forEach(function (crtItemGroup) {
-                        var crtRecord = [];
-                        var counterG = 0;
-                        Object.keys(config.SharePoint.MetaDataOutput.SiteGroups).map(function (itemG) {
-                            crtRecord[counterG] = crtItemGroup[config.SharePoint.MetaDataOutput.SiteGroups[itemG]];
-                            counterG++;
-                        });
+                        var crtRecord = MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.SiteGroups, crtItemGroup);
                         wStreamGroups.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
-                        request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, crtItemGroup.Id, 'GroupMembers', data)).then(function (responseMembers) {
+                        request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, crtItemGroup.Id, 'Users', data)).then(function (responseMembers) { // returning Group Members (aka Users of current Group)
                             var dataObjectMemberValues = responseMembers.d.results;
                             if (Object.keys(dataObjectMemberValues).length > 0) {
                                 dataObjectMemberValues.forEach(function (crtItemGroupMember) {
-                                    var crtRecordGM = [];
-                                    var counterGM = 0;
-                                    Object.keys(config.SharePoint.MetaDataOutput.SiteGroupMembers).map(function (itemGM) {
-                                        crtRecordGM[counterGM] = crtItemGroupMember[config.SharePoint.MetaDataOutput.SiteGroupMembers[itemGM]];
-                                        counterGM++;
-                                    });
+                                    var crtRecordGM = MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.SiteGroupMembers, crtItemGroupMember);
                                     wStreamGroupMembers.write('"' + crtItemGroup.Title + '"' + config.General.ListSeparator + '"' + crtRecordGM.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
                                 });
                             }
