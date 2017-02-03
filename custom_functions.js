@@ -20,7 +20,7 @@ module.exports = {
         Object.keys(inObjectListsConfiguredAttributes).map(function (itemList) {
             if (itemList.substring(0, 4) === 'Date') {
                 if (inCurrentList[inObjectListsConfiguredAttributes[itemList]] === null) {
-                    crtListAttributes[itemList] = 'null';
+                    crtListAttributes[itemList] = '';
                 } else {
                     crtListAttributes[itemList] = inCurrentList[inObjectListsConfiguredAttributes[itemList]].replace('T', ' ').replace('Z', '');
                 }
@@ -37,7 +37,7 @@ module.exports = {
             switch (fieldAttributes[itemF]['Type']) {
                 case 'DateTime':
                     if (item[fieldAttributes[itemF]['Technical Name']] === null) {
-                        crtRecord[counterF] = 'null';
+                        crtRecord[counterF] = '';
                     } else {
                         crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']].replace('T', ' ').replace('Z', '');
                     }
@@ -54,21 +54,12 @@ module.exports = {
         });
         return crtRecord;
     },
-    buildCurrentRecordValues: function (predefinedListOfFields, crtRecordValues) {
-        var crtRecordGM = [];
-        var counterGM = 0;
-        Object.keys(predefinedListOfFields).map(function (itemGM) {
-            crtRecordGM[counterGM] = crtRecordValues[predefinedListOfFields[itemGM]];
-            counterGM++;
-        });
-        return crtRecordGM;
-    },
     buildRequestQuery: function (targetSharePointURL, arStandardLists, crtListName, queryType, inData) {
         var queryPrefix = '';
         if (Object.keys(arStandardLists).indexOf(queryType) > -1) {
-            queryPrefix = '_api/Web/' + arStandardLists[queryType]['APItrunk']
-                    + '/' + arStandardLists[queryType]['APIfunction'] + '(\''
-                    + crtListName + '\')/' + arStandardLists[queryType]['APIelement'];
+            queryPrefix = '_api/Web/' + arStandardLists[queryType]['WebAPItrunk']
+                    + '/' + arStandardLists[queryType]['WebAPIdeterminationFunction'] + '(\''
+                    + crtListName + '\')/' + arStandardLists[queryType]['WebAPIdeterminationElement'];
         } else {
             queryPrefix = '_api/Web/' + queryType;
         }
@@ -92,10 +83,26 @@ module.exports = {
     },
     internalQueryStructureArray: function (maxRecords) {
         return {
-            'Fields': {'APItrunk': 'Lists', 'APIfunction': 'GetByTitle', 'APIelement': 'Fields'},
-            'Users': {'APItrunk': 'SiteGroups', 'APIfunction': 'GetById', 'APIelement': 'Users'},
-            'Items': {'APItrunk': 'Lists', 'APIfunction': 'GetByTitle', 'APIelement': 'Items' + '?$top=' + maxRecords},
-            'Views': {'APItrunk': 'Lists', 'APIfunction': 'GetByTitle', 'APIelement': 'Views'}
+            'Fields': {
+                'WebAPItrunk': 'Lists',
+                'WebAPIdeterminationFunction': 'GetByTitle',
+                'WebAPIdeterminationElement': 'Fields'
+            },
+            'GroupMembers': {
+                'WebAPItrunk': 'SiteGroups',
+                'WebAPIdeterminationFunction': 'GetById',
+                'WebAPIdeterminationElement': 'Users'
+            },
+            'Items': {
+                'WebAPItrunk': 'Lists',
+                'WebAPIdeterminationFunction': 'GetByTitle',
+                'WebAPIdeterminationElement': 'Items' + '?$top=' + maxRecords
+            },
+            'Views': {
+                'WebAPItrunk': 'Lists',
+                'WebAPIdeterminationFunction': 'GetByTitle',
+                'WebAPIdeterminationElement': 'Views'
+            }
         };
     }
 };
