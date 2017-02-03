@@ -1,11 +1,15 @@
 
 module.exports = {
     buildAuthenticationHeader: function (inAuthenticationArray) {
-        if (inAuthenticationArray.type === 'Addin') {
-            return inAuthenticationArray.credentials_Addin;
-        } else if (inAuthenticationArray.type === 'SAML') {
-            return inAuthenticationArray.credentials_SAML;
+        switch (inAuthenticationArray.type) {
+            case 'Addin':
+                return inAuthenticationArray.credentials_Addin;
+                break;
+            case 'SAML':
+                return inAuthenticationArray.credentials_SAML;
+                break;
         }
+        return false;
     },
     buildCurrentListAttributeValues: function (inObjectListsConfiguredAttributes, inCurrentList) {
         var crtListAttributes = [];
@@ -23,23 +27,35 @@ module.exports = {
         return crtListAttributes;
     },
     buildRequestQuery: function (targetSharePointURL, crtListName, queryType, headerOptions, maxRecords) {
+        var arStandardLists = {
+            'Fields': {
+                'WebAPItrunk': 'Lists',
+                'WebAPIdeterminationFunction': 'GetByTitle',
+                'WebAPIdeterminationElement': 'Fields'
+            },
+            'GroupMembers': {
+                'WebAPItrunk': 'SiteGroups',
+                'WebAPIdeterminationFunction': 'GetById',
+                'WebAPIdeterminationElement': 'Users'
+            },
+            'Items': {
+                'WebAPItrunk': 'Lists',
+                'WebAPIdeterminationFunction': 'GetByTitle',
+                'WebAPIdeterminationElement': 'Items' + '?$top=' + maxRecords
+            },
+            'Views': {
+                'WebAPItrunk': 'Lists',
+                'WebAPIdeterminationFunction': 'GetByTitle',
+                'WebAPIdeterminationElement': 'Views'
+            }
+        };
         var queryPrefix = '';
-        switch (queryType) {
-            case 'Fields':
-                queryPrefix = '_api/Web/lists/GetByTitle(\'' + crtListName + '\')/' + queryType;
-                break;
-            case 'GroupMembers':
-                queryPrefix = '_api/Web/SiteGroups/GetById(' + crtListName + ')/Users';
-                break;
-            case 'Items':
-                queryPrefix = '_api/Web/lists/GetByTitle(\'' + crtListName + '\')/' + queryType + '?$top=' + maxRecords;
-                break;
-            case 'Views':
-                queryPrefix = '_api/Web/lists/GetByTitle(\'' + crtListName + '\')/' + queryType;
-                break;
-            default:
-                queryPrefix = '_api/Web/' + queryType;
-                break;
+        if (Object.keys(arStandardLists).indexOf(queryType) > -1) {
+            queryPrefix = '_api/Web/' + arStandardLists[queryType]['WebAPItrunk']
+                    + '/' + arStandardLists[queryType]['WebAPIdeterminationFunction'] + '(\''
+                    + crtListName + '\')/' + arStandardLists[queryType]['WebAPIdeterminationElement'];
+        } else {
+            queryPrefix = '_api/Web/' + queryType;
         }
         return {
             url: targetSharePointURL + queryPrefix,
@@ -48,12 +64,19 @@ module.exports = {
         };
     },
     decideBlackListWhiteList: function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
-        if ((inDecisionValue === inEvaluatedValueForBlackList) && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) {
-            return true;
+        var bolReturn = false;
+        switch (inDecisionValue) {
+            case inEvaluatedValueForBlackList:
+                if (inBlackListArray.indexOf(inValueToEvaluate) === -1) {
+                    bolReturn = true;
+                }
+                break;
+            case inEvaluatedValueForWhiteList:
+                if (inWhiteListArray.indexOf(inValueToEvaluate) > -1) {
+                    bolReturn = true;
+                }
+                break;
         }
-        if ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1)) {
-            return true;
-        }
-        return false;
+        return bolReturn;
     }
 };
