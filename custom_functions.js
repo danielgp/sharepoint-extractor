@@ -7,6 +7,22 @@ module.localFunctions = {
             crtResult = inCurrentList[crtIndex].replace('T', ' ').replace('Z', '');
         }
         return crtResult;
+    },
+    manageFieldsOfAllTypes: function (crtFieldAttributes, item) {
+        var crtResult;
+        switch (crtFieldAttributes['Type']) {
+            case 'DateTime':
+                crtResult = module.localFunctions.manageDateField(item, crtFieldAttributes['Technical Name']);
+                break;
+            case 'Lookup':
+            case 'User':
+                crtResult = item[crtFieldAttributes['Technical Name'] + 'Id'];
+                break;
+            default:
+                crtResult = item[crtFieldAttributes['Technical Name']];
+                break;
+        }
+        return crtResult;
     }
 };
 module.exports = {
@@ -40,18 +56,7 @@ module.exports = {
         var crtRecord = [];
         var counterF = 0;
         Object.keys(fieldAttributes).map(function (itemF) {
-            switch (fieldAttributes[itemF]['Type']) {
-                case 'DateTime':
-                    crtRecord[counterF] = module.localFunctions.manageDateField(item, fieldAttributes[itemF]['Technical Name']);
-                    break;
-                case 'Lookup':
-                case 'User':
-                    crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name'] + 'Id'];
-                    break;
-                default:
-                    crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']];
-                    break;
-            }
+            crtRecord[counterF] = module.localFunctions.manageFieldsOfAllTypes(fieldAttributes[itemF], item);
             counterF++;
         });
         return crtRecord;
@@ -103,5 +108,15 @@ module.exports = {
             'Items': {'APItrunk': 'Lists', 'APIfunction': 'GetByTitle', 'APIelement': 'Items' + '?$top=' + maxRecords},
             'Views': {'APItrunk': 'Lists', 'APIfunction': 'GetByTitle', 'APIelement': 'Views'}
         };
+    },
+    manageRequestIntoCSVfile: function (inParameters, crtListParameters, responseListRecord, fieldAttributes, fs) {
+        var writeStream = fs.createWriteStream(inParameters['filePath'] + inParameters['fileName'] + '.csv', {encoding: 'utf8'});
+        writeStream.write('"' + Object.keys(fieldAttributes).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"Version' : '') + '"\n'); // writing headers for records within current list
+        if (Object.keys(responseListRecord.d.results).length > 0) {
+            responseListRecord.d.results.forEach(function (itemFieldValue) {
+                writeStream.write('"' + module.exports.buildCurrentItemValues(fieldAttributes, itemFieldValue).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"' + itemFieldValue.OData__UIVersionString : '') + '"\n'); // writing current record values
+            });
+        }
+        writeStream.end();
     }
 };
