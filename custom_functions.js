@@ -1,4 +1,14 @@
-
+module.localFunctions = {
+    manageDateField: function (inCurrentList, crtIndex) {
+        var crtResult = '';
+        if (inCurrentList[crtIndex] === null) {
+            crtResult = 'null';
+        } else {
+            crtResult = inCurrentList[crtIndex].replace('T', ' ').replace('Z', '');
+        }
+        return crtResult;
+    }
+};
 module.exports = {
     buildAuthenticationHeader: function (inAuthenticationArray) {
         var aReturn;
@@ -19,11 +29,7 @@ module.exports = {
         var crtListAttributes = [];
         Object.keys(inObjectListsConfiguredAttributes).map(function (itemList) {
             if (itemList.substring(0, 4) === 'Date') {
-                if (inCurrentList[inObjectListsConfiguredAttributes[itemList]] === null) {
-                    crtListAttributes[itemList] = 'null';
-                } else {
-                    crtListAttributes[itemList] = inCurrentList[inObjectListsConfiguredAttributes[itemList]].replace('T', ' ').replace('Z', '');
-                }
+                crtListAttributes[itemList] = module.localFunctions.manageDateField(inCurrentList, inObjectListsConfiguredAttributes[itemList]);
             } else {
                 crtListAttributes[itemList] = inCurrentList[inObjectListsConfiguredAttributes[itemList]];
             }
@@ -36,11 +42,7 @@ module.exports = {
         Object.keys(fieldAttributes).map(function (itemF) {
             switch (fieldAttributes[itemF]['Type']) {
                 case 'DateTime':
-                    if (item[fieldAttributes[itemF]['Technical Name']] === null) {
-                        crtRecord[counterF] = 'null';
-                    } else {
-                        crtRecord[counterF] = item[fieldAttributes[itemF]['Technical Name']].replace('T', ' ').replace('Z', '');
-                    }
+                    crtRecord[counterF] = module.localFunctions.manageDateField(item, fieldAttributes[itemF]['Technical Name']);
                     break;
                 case 'Lookup':
                 case 'User':

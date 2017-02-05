@@ -9,7 +9,6 @@ spauth
         .getAuth(targetSharePoint.URL, MyCustomFunctions.buildAuthenticationHeader(targetSharePoint.authentication))
         .then(function (data) {
             var internalQueryStructureGeneric = MyCustomFunctions.internalQueryStructureArray(0);
-            var ListNameArray = [];
             request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, '', 'Lists', data)).then(function (response) {
                 var dataObjectLists = response.d.results;
                 if (Object.keys(dataObjectLists).length > 0) {
@@ -19,7 +18,6 @@ spauth
                     var counter = 0;
                     dataObjectLists.forEach(function (item) {
                         dataListLight[counter] = MyCustomFunctions.buildCurrentListAttributeValues(config.SharePoint.MetaDataOutput.Lists, item);
-                        ListNameArray[counter] = item.Title;
                         counter++;
                     });
                     var wStreamList = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.Lists + '.csv', {encoding: 'utf8'}); // initiate MetaData for Lists
@@ -42,13 +40,9 @@ spauth
                                             crtRecordFieldWillBeExtracted = true;
                                         }
                                         if (crtRecordFieldWillBeExtracted) {
-                                            fieldAttributes[item.Title] = {
-                                                'Technical Name': item.StaticName,
-                                                'Type': item.TypeAsString
-                                            };
+                                            fieldAttributes[item.Title] = {'Technical Name': item.StaticName, 'Type': item.TypeAsString};
                                             counter++;
-                                            var crtListField = MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.Fields, item);
-                                            wStreamListFields.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + crtListField.join('"' + config.General.ListSeparator + '"') + '"\n');
+                                            wStreamListFields.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.Fields, item).join('"' + config.General.ListSeparator + '"') + '"\n'); // fields of current List
                                         }
                                     });
                                     var internalQueryStructureItem = MyCustomFunctions.internalQueryStructureArray(crtListParameters.Records);
@@ -58,8 +52,7 @@ spauth
                                         var dataObjectValues = response.d.results;
                                         if (Object.keys(dataObjectValues).length > 0) {
                                             dataObjectValues.forEach(function (item) {
-                                                var crtRecord = MyCustomFunctions.buildCurrentItemValues(fieldAttributes, item);
-                                                wstream.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + (crtListParameters['Versioning Enabled'] ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n'); // writing current record values
+                                                wstream.write('"' + MyCustomFunctions.buildCurrentItemValues(fieldAttributes, item).join('"' + config.General.ListSeparator + '"') + (crtListParameters['Versioning Enabled'] ? '"' + config.General.ListSeparator + '"' + item.OData__UIVersionString : '') + '"\n'); // writing current record values
                                             });
                                         }
                                         wstream.end();
@@ -70,8 +63,7 @@ spauth
                                 var dataViewObject = responseViews.d.results;
                                 if (Object.keys(dataViewObject).length > 0) {
                                     dataViewObject.forEach(function (crtView) {
-                                        var crtRecordView = MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.Views, crtView);
-                                        wStreamListViews.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + crtRecordView.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
+                                        wStreamListViews.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.Views, crtView).join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
                                     });
                                 }
                             });
@@ -88,14 +80,12 @@ spauth
                     var wStreamGroupMembers = fs.createWriteStream(config.General.PathForExtracts + config.General.MetaDataFileName.SiteGroupMembers + '.csv', {encoding: 'utf8'}); // initiate MetaData for Group Members
                     wStreamGroupMembers.write('"Group"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.SiteGroupMembers).join('"' + config.General.ListSeparator + '"') + '"\n'); // Headers for Group Members
                     dataObjectValues.forEach(function (crtItemGroup) {
-                        var crtRecord = MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.SiteGroups, crtItemGroup);
-                        wStreamGroups.write('"' + crtRecord.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
+                        wStreamGroups.write('"' + MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.SiteGroups, crtItemGroup).join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
                         request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, crtItemGroup.Id, 'GroupMembers', data)).then(function (responseMembers) {
                             var dataObjectMemberValues = responseMembers.d.results;
                             if (Object.keys(dataObjectMemberValues).length > 0) {
                                 dataObjectMemberValues.forEach(function (crtItemGroupMember) {
-                                    var crtRecordGM = MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.SiteGroupMembers, crtItemGroupMember);
-                                    wStreamGroupMembers.write('"' + crtItemGroup.Title + '"' + config.General.ListSeparator + '"' + crtRecordGM.join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
+                                    wStreamGroupMembers.write('"' + crtItemGroup.Title + '"' + config.General.ListSeparator + '"' + MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.SiteGroupMembers, crtItemGroupMember).join('"' + config.General.ListSeparator + '"') + '"\n'); // writing current record values
                                 });
                             }
                         });
