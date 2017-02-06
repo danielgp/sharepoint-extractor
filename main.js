@@ -29,11 +29,8 @@ spauth
                                 if (Object.keys(responseField.d.results).length > 0) {
                                     var fieldAttributes = [];
                                     responseField.d.results.forEach(function (itemField) {
-                                        var crtRecordFieldWillBeExtracted = MyCustomFunctions.decideBlackListWhiteList(itemField.CanBeDeleted, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, itemField.InternalName); // check current Field against configured BlackList and WhiteList besides considering user defined Fields
-                                        if (config.SharePoint.Filters.Lists.Hidden.WhiteList.indexOf(crtListParameters.Title) > -1) {  // for certain Lists all existing fields should be retrieved
-                                            crtRecordFieldWillBeExtracted = true;
-                                        }
-                                        if (crtRecordFieldWillBeExtracted) {
+                                        // check current Field against configured BlackList and WhiteList besides considering user defined Fields || for certain Lists all existing fields should be retrieved
+                                        if (MyCustomFunctions.decideBlackListWhiteList(itemField.CanBeDeleted, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, itemField.InternalName) || (config.SharePoint.Filters.Lists.Hidden.WhiteList.indexOf(crtListParameters.Title) > -1)) {
                                             fieldAttributes[itemField.Title] = {'Technical Name': itemField.StaticName, 'Type': itemField.TypeAsString};
                                             wStreamListFields.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.Fields, itemField).join('"' + config.General.ListSeparator + '"') + '"\n'); // fields of current List
                                         }
