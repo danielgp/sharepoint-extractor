@@ -68,10 +68,11 @@ module.exports = {
         return crtRecord;
     },
     buildCurrentRecordValues: function (inFieldsArray, crtRecordValues) {
+        var specialColumns = ['Aggregations', 'HtmlSchemaXml'];
         var crtRecordGM = [];
         var counterGM = 0;
         Object.keys(inFieldsArray).map(function (itemGM) {
-            if (inFieldsArray[itemGM] === 'HtmlSchemaXml') {
+            if (specialColumns.indexOf(inFieldsArray[itemGM]) > -1) {
                 crtRecordGM[counterGM] = JSON.stringify(crtRecordValues[inFieldsArray[itemGM]]);
             } else {
                 crtRecordGM[counterGM] = crtRecordValues[inFieldsArray[itemGM]];
