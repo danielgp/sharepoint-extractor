@@ -21,7 +21,7 @@ spauth
                     var wStreamList = MyCustomFunctions.createOutputFileWithHeader({'filePath': config.General.PathForExtracts, 'fileName': config.General.MetaDataFileName.Lists, 'fileHeader': '"' + Object.keys(dataListLight[0]).join('"' + config.General.ListSeparator + '"')}, fs);
                     var wStreamListFields = MyCustomFunctions.createOutputFileWithHeader({'filePath': config.General.PathForExtracts, 'fileName': config.General.MetaDataFileName.Fields, 'fileHeader': '"List"' + config.General.ListSeparator + '"' + Object.keys(config.SharePoint.MetaDataOutput.Fields).join('"' + config.General.ListSeparator + '"')}, fs);
                     dataListLight.forEach(function (crtListParameters) { // parse each List
-                        if (MyCustomFunctions.decideBlackListWhiteList(crtListParameters.Hidden, false, config.SharePoint.Filters.Lists.NotHidden.BlackList, true, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListParameters.Title)) { // check current List against configured BlackList and WhiteList besides considering user defined Lists
+                        if (MyCustomFunctions.decideBlackListWhiteList(!crtListParameters.Hidden, config.SharePoint.Filters.Lists.NotHidden.BlackList, config.SharePoint.Filters.Lists.Hidden.WhiteList, crtListParameters.Title)) { // check current List against configured BlackList and WhiteList besides considering user defined Lists
                             wStreamList.write('"' + Object.keys(crtListParameters).map(function (x) { // records detail of current List
                                 return crtListParameters[x];
                             }).join('"' + config.General.ListSeparator + '"') + '"\n');
@@ -29,7 +29,7 @@ spauth
                                 if (Object.keys(responseField.d.results).length > 0) {
                                     var fieldAttributes = [];
                                     responseField.d.results.forEach(function (itemField) {
-                                        var crtRecordFieldWillBeExtracted = MyCustomFunctions.decideBlackListWhiteList(itemField.CanBeDeleted, true, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, false, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, itemField.InternalName); // check current Field against configured BlackList and WhiteList besides considering user defined Fields
+                                        var crtRecordFieldWillBeExtracted = MyCustomFunctions.decideBlackListWhiteList(itemField.CanBeDeleted, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, itemField.InternalName); // check current Field against configured BlackList and WhiteList besides considering user defined Fields
                                         if (config.SharePoint.Filters.Lists.Hidden.WhiteList.indexOf(crtListParameters.Title) > -1) {  // for certain Lists all existing fields should be retrieved
                                             crtRecordFieldWillBeExtracted = true;
                                         }

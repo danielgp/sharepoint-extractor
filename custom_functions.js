@@ -1,4 +1,16 @@
 module.localFunctions = {
+    decideBlackList: function (inEvaluatedValueForBlackList, inBlackListArray, inValueToEvaluate) {
+        if (inEvaluatedValueForBlackList && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) {
+            return true;
+        }
+        return false;
+    },
+    decideWhiteList: function (inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
+        if (inEvaluatedValueForWhiteList && (inWhiteListArray.indexOf(inValueToEvaluate) > -1)) {
+            return true;
+        }
+        return false;
+    },
     manageDateField: function (inCurrentList, crtIndex) {
         var crtResult = '';
         if (inCurrentList[crtIndex] === null) {
@@ -90,11 +102,8 @@ module.exports = {
         writeStream.write(inParameters['fileHeader'] + '"\n'); // Headers content
         return writeStream;
     },
-    decideBlackListWhiteList: function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
-        if (((inDecisionValue === inEvaluatedValueForBlackList) && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) || ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1))) {
-            return true;
-        }
-        return false;
+    decideBlackListWhiteList: function (inDecisionValue, inBlackListArray, inWhiteListArray, inValueToEvaluate) {
+        return (module.localFunctions.decideBlackList(inDecisionValue, inBlackListArray, inValueToEvaluate) || module.localFunctions.decideWhiteList(!inDecisionValue, inWhiteListArray, inValueToEvaluate));
     },
     internalQueryStructureArray: function (maxRecords) {
         return {
