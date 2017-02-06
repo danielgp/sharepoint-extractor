@@ -9,20 +9,14 @@ module.localFunctions = {
         return crtResult;
     },
     manageFieldsOfAllTypes: function (crtFieldAttributes, item) {
-        var crtResult;
-        switch (crtFieldAttributes['Type']) {
-            case 'DateTime':
-                crtResult = module.localFunctions.manageDateField(item, crtFieldAttributes['Technical Name']);
-                break;
-            case 'Lookup':
-            case 'User':
-                crtResult = item[crtFieldAttributes['Technical Name'] + 'Id'];
-                break;
-            default:
-                crtResult = item[crtFieldAttributes['Technical Name']];
-                break;
+        if (crtFieldAttributes['Type'] === 'DateTime') {
+            return module.localFunctions.manageDateField(item, crtFieldAttributes['Technical Name']);
         }
-        return crtResult;
+        var idFieldsType = ['Lookup', 'User'];
+        if (idFieldsType.indexOf(crtFieldAttributes['Type']) > -1) {
+            return item[crtFieldAttributes['Technical Name'] + 'Id'];
+        }
+        return item[crtFieldAttributes['Technical Name']];
     }
 };
 module.exports = {
@@ -92,14 +86,10 @@ module.exports = {
         };
     },
     decideBlackListWhiteList: function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
-        var bolReturn = false;
-        if ((inDecisionValue === inEvaluatedValueForBlackList) && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) {
-            bolReturn = true;
+        if (((inDecisionValue === inEvaluatedValueForBlackList) && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) || ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1))) {
+            return true;
         }
-        if ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1)) {
-            bolReturn = true;
-        }
-        return bolReturn;
+        return false;
     },
     internalQueryStructureArray: function (maxRecords) {
         return {
@@ -111,10 +101,10 @@ module.exports = {
     },
     manageRequestIntoCSVfile: function (inParameters, crtListParameters, responseListRecord, fieldAttributes, fs) {
         var writeStream = fs.createWriteStream(inParameters['filePath'] + inParameters['fileName'] + '.csv', {encoding: 'utf8'});
-        writeStream.write('"' + Object.keys(fieldAttributes).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"Version' : '') + '"\n'); // writing headers for records within current list
+        writeStream.write('"' + Object.keys(fieldAttributes).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"Version' : '') + '"\n'); // writing headers
         if (Object.keys(responseListRecord.d.results).length > 0) {
             responseListRecord.d.results.forEach(function (itemFieldValue) {
-                writeStream.write('"' + module.exports.buildCurrentItemValues(fieldAttributes, itemFieldValue).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"' + itemFieldValue.OData__UIVersionString : '') + '"\n'); // writing current record values
+                writeStream.write('"' + module.exports.buildCurrentItemValues(fieldAttributes, itemFieldValue).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"' + itemFieldValue.OData__UIVersionString : '') + '"\n'); // writing rows
             });
         }
         writeStream.end();
