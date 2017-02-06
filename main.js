@@ -31,7 +31,6 @@ spauth
                             request.get(MyCustomFunctions.buildRequestQuery(targetSharePoint.URL, internalQueryStructureGeneric, crtListParameters.Title, 'Fields', data)).then(function (responseField) { // Dynamically detect structure of the list, extracting the Field names and their text to display
                                 if (Object.keys(responseField.d.results).length > 0) {
                                     var fieldAttributes = [];
-                                    var counter = 0;
                                     responseField.d.results.forEach(function (itemField) {
                                         var crtRecordFieldWillBeExtracted = MyCustomFunctions.decideBlackListWhiteList(itemField.CanBeDeleted, true, config.SharePoint.Filters.Fields.CanBeDeleted.BlackList, false, config.SharePoint.Filters.Fields.CannotBeDeleted.WhiteList, itemField.InternalName); // check current Field against configured BlackList and WhiteList besides considering user defined Fields
                                         if (config.SharePoint.Filters.Lists.Hidden.WhiteList.indexOf(crtListParameters.Title) > -1) {  // for certain Lists all existing fields should be retrieved
@@ -39,7 +38,6 @@ spauth
                                         }
                                         if (crtRecordFieldWillBeExtracted) {
                                             fieldAttributes[itemField.Title] = {'Technical Name': itemField.StaticName, 'Type': itemField.TypeAsString};
-                                            counter++;
                                             wStreamListFields.write('"' + crtListParameters.Title + '"' + config.General.ListSeparator + '"' + MyCustomFunctions.buildCurrentRecordValues(config.SharePoint.MetaDataOutput.Fields, itemField).join('"' + config.General.ListSeparator + '"') + '"\n'); // fields of current List
                                         }
                                     });
