@@ -85,6 +85,11 @@ module.exports = {
             json: true
         };
     },
+    createOutputFileWithHeader: function (inParameters, fs) {
+        var writeStream = fs.createWriteStream(inParameters['filePath'] + inParameters['fileName'] + '.csv', {encoding: 'utf8'}); // initiate file stream
+        writeStream.write(inParameters['fileHeader'] + '"\n'); // Headers content
+        return writeStream;
+    },
     decideBlackListWhiteList: function (inDecisionValue, inEvaluatedValueForBlackList, inBlackListArray, inEvaluatedValueForWhiteList, inWhiteListArray, inValueToEvaluate) {
         if (((inDecisionValue === inEvaluatedValueForBlackList) && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) || ((inDecisionValue === inEvaluatedValueForWhiteList) && (inWhiteListArray.indexOf(inValueToEvaluate) > -1))) {
             return true;
@@ -100,8 +105,7 @@ module.exports = {
         };
     },
     manageRequestIntoCSVfile: function (inParameters, crtListParameters, responseListRecord, fieldAttributes, fs) {
-        var writeStream = fs.createWriteStream(inParameters['filePath'] + inParameters['fileName'] + '.csv', {encoding: 'utf8'});
-        writeStream.write('"' + Object.keys(fieldAttributes).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"Version' : '') + '"\n'); // writing headers
+        var writeStream = module.exports.createOutputFileWithHeader({'filePath': inParameters['filePath'], 'fileName': inParameters['fileName'], 'fileHeader': '"' + Object.keys(fieldAttributes).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"Version' : '')}, fs);
         if (Object.keys(responseListRecord.d.results).length > 0) {
             responseListRecord.d.results.forEach(function (itemFieldValue) {
                 writeStream.write('"' + module.exports.buildCurrentItemValues(fieldAttributes, itemFieldValue).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"' + itemFieldValue.OData__UIVersionString : '') + '"\n'); // writing rows
