@@ -35,7 +35,12 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
-/nbproject/private/
 
 # Backup of configuration files
 *.7z
+
+# Netbeans private settings
+/nbproject/private/
+
+# Results in CSV format
+/results/*.csv
