@@ -14,11 +14,10 @@ module.localFunctions = {
     },
     isNumeric: function (val) {
         return isNumber(val);
-//        return (Number(parseFloat(val)) === val);
     },
     manageDateField: function (inCurrentList, crtIndex) {
         var crtResult = '';
-        if (inCurrentList[crtIndex] === null) {
+        if ((inCurrentList[crtIndex] === null) || (inCurrentList[crtIndex] === undefined)) {
             crtResult = 'null';
         } else {
             crtResult = inCurrentList[crtIndex].replace('T', ' ').replace('Z', '');
