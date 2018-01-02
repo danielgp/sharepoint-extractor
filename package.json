@@ -1,6 +1,6 @@
 {
     "name": "sharepoint-extractor",
-    "description": "Extract information from online SharePoint using nodejs framework",
+    "description": "Extract information from on-line SharePoint using nodejs framework",
     "version": "2.1.0",
     "license": "MIT",
     "keywords": [
@@ -13,14 +13,15 @@
         "email": "daniel.popiniuc@honeywell.com"
     },
     "dependencies": {
-        "node-sp-auth": "~2.3.1",
-        "request-promise": "~4.2.2"
+        "is-number": "^4.0.0",
+        "node-sp-auth": "^2.3.1",
+        "request-promise": "^4.2.2"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/danielgp/sharepoint-extractor.git"
     },
     "scripts": {
-        "start":"node main.js"
+        "start": "node main.js"
     }
 }
