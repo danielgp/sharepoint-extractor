@@ -1,3 +1,4 @@
+var isNumber = require('is-number');
 module.localFunctions = {
     decideBlackList: function (inEvaluatedValueForBlackList, inBlackListArray, inValueToEvaluate) {
         if (inEvaluatedValueForBlackList && (inBlackListArray.indexOf(inValueToEvaluate) === -1)) {
@@ -10,6 +11,10 @@ module.localFunctions = {
             return true;
         }
         return false;
+    },
+    isNumeric: function (val) {
+        return isNumber(val);
+//        return (Number(parseFloat(val)) === val);
     },
     manageDateField: function (inCurrentList, crtIndex) {
         var crtResult = '';
@@ -28,7 +33,11 @@ module.localFunctions = {
         if (idFieldsType.indexOf(crtFieldAttributes['Type']) > -1) {
             return item[crtFieldAttributes['Technical Name'] + 'Id'];
         }
-        return item[crtFieldAttributes['Technical Name']];
+        if (isNumber(item[crtFieldAttributes['Technical Name']])) {
+            return item[crtFieldAttributes['Technical Name']];
+        } else {
+            return '"' + item[crtFieldAttributes['Technical Name']] + '"';
+        }
     }
 };
 module.exports = {
@@ -73,9 +82,13 @@ module.exports = {
         var counterGM = 0;
         Object.keys(inFieldsArray).map(function (itemGM) {
             if (specialColumns.indexOf(inFieldsArray[itemGM]) > -1) {
-                crtRecordGM[counterGM] = JSON.stringify(crtRecordValues[inFieldsArray[itemGM]]);
+                crtRecordGM[counterGM] = '"' + JSON.stringify(crtRecordValues[inFieldsArray[itemGM]]) + '"';
             } else {
-                crtRecordGM[counterGM] = crtRecordValues[inFieldsArray[itemGM]];
+                if (isNumber(crtRecordValues[inFieldsArray[itemGM]])) {
+                    crtRecordGM[counterGM] = crtRecordValues[inFieldsArray[itemGM]];
+                } else {
+                    crtRecordGM[counterGM] = '"' + crtRecordValues[inFieldsArray[itemGM]] + '"';
+                }
             }
             counterGM++;
         });
@@ -118,7 +131,7 @@ module.exports = {
         var writeStream = module.exports.createOutputFileWithHeader({'filePath': inParameters['filePath'], 'fileName': inParameters['fileName'], 'fileHeader': '"' + Object.keys(fieldAttributes).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"Version' : '')}, fs);
         if (Object.keys(responseListRecord.d.results).length > 0) {
             responseListRecord.d.results.forEach(function (itemFieldValue) {
-                writeStream.write('"' + module.exports.buildCurrentItemValues(fieldAttributes, itemFieldValue).join('"' + inParameters['ListSeparator'] + '"') + (crtListParameters['Versioning Enabled'] ? '"' + inParameters['ListSeparator'] + '"' + itemFieldValue.OData__UIVersionString : '') + '"\n'); // writing rows
+                writeStream.write(module.exports.buildCurrentItemValues(fieldAttributes, itemFieldValue).join(inParameters['ListSeparator']) + (crtListParameters['Versioning Enabled'] ? inParameters['ListSeparator'] + itemFieldValue.OData__UIVersionString : '') + '\n'); // writing rows
             });
         }
         writeStream.end();
