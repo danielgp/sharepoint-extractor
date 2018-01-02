@@ -13,8 +13,8 @@
         "email": "daniel.popiniuc@honeywell.com"
     },
     "dependencies": {
-        "node-sp-auth": "^1.2.0",
-        "request-promise": "^4.1.1"
+        "node-sp-auth": "~2.3.1",
+        "request-promise": "~4.2.2"
     },
     "repository": {
         "type": "git",
