@@ -1,7 +1,7 @@
 {
     "name": "sharepoint-extractor",
     "description": "Extract information from on-line SharePoint using nodejs framework",
-    "version": "2.1.0",
+    "version": "2.2.1",
     "license": "MIT",
     "keywords": [
         "csv",
@@ -13,8 +13,8 @@
         "email": "daniel.popiniuc@honeywell.com"
     },
     "dependencies": {
-        "is-number": "^4.0.0",
-        "node-sp-auth": "^2.3.1",
+        "is-number": "^5.0.0",
+        "node-sp-auth": "^2.3.4",
         "request-promise": "^4.2.2"
     },
     "repository": {
