@@ -40,6 +40,7 @@ nodeJS           | npm    | Date
 7.5.0 LTS 64-bit | 4.1.2  | 2nd of February 2017
 7.6.0 LTS 64-bit | 4.1.2  | 27th of February 2017
 7.7.0 LTS 64-bit | 4.1.2  | 1st of March 2017
+8.11.3    64-bit | 5.6.0  | 4th of July 2018
 9.3.0     64-bit | 5.5.1  | 2nd of January 2018
 
 SharePoint | Date
