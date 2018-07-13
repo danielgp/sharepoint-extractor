@@ -42,6 +42,7 @@ nodeJS           | npm    | Date
 7.7.0 LTS 64-bit | 4.1.2  | 1st of March 2017
 8.11.3    64-bit | 5.6.0  | 4th of July 2018
 9.3.0     64-bit | 5.5.1  | 2nd of January 2018
+10.6.0    64-bit | 6.1.0  | 13th of July 2018
 
 SharePoint | Date
 ---------- | ---------------------
@@ -52,6 +53,12 @@ Authentication Type | Date
 SAML                | 25th of November 2016
 AddIn               | 29th of November 2016
 
+
+#Refferences
+
+[Download Latest NodeJS package](https://nodejs.org/en/download/current/)
+
+
 #Code quality analysis
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/badges/build.png?b=master)](https://scrutinizer-ci.com/g/danielgp/sharepoint-extractor/build-status/master)
+[![Known Vulnerabilities](https://snyk.io/test/github/danielgp/sharepoint-extractor/badge.svg?targetFile=package.json)](https://snyk.io/test/github/danielgp/sharepoint-extractor?targetFile=package.json)
