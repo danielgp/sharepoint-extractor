@@ -42,5 +42,8 @@ jspm_packages
 # Netbeans private settings
 /nbproject/private/
 
-# Results in CSV format
-/results/*.csv
+# Results of various statistics
+/results/*
+
+# NodeJS installed modules
+/node_modules/
