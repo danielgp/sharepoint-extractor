@@ -16,7 +16,7 @@
     "is-number": "^7.0.0",
     "node-sp-auth": "^2.5.7",
     "request-promise": "^4.2.4",
-    "snyk": "^1.247.1"
+    "snyk": "^1.279.1"
   },
   "repository": {
     "type": "git",
