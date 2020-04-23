@@ -14,8 +14,9 @@
     },
     "dependencies": {
         "is-number": "^7.0.0",
+        "minimist": ">=0.2.1",
         "node-sp-auth": "^2.5.7",
-        "request-promise": "^4.2.4",
+        "request-promise": "^4.2.5",
         "snyk": "^1.234.2"
     },
     "repository": {
