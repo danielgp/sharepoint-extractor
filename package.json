@@ -1,29 +1,32 @@
 {
-    "name": "sharepoint-extractor",
-    "description": "Extract information from on-line SharePoint using nodejs framework",
-    "version": "2.2.6",
-    "license": "MIT",
-    "keywords": [
-        "csv",
-        "server",
-        "sharepoint"
-    ],
-    "author": {
-        "name": "Daniel Popiniuc",
-        "email": "daniel.popiniuc@honeywell.com"
-    },
-    "dependencies": {
-        "is-number": "^7.0.0",
-        "minimist": ">=0.2.1",
-        "node-sp-auth": "^2.5.7",
-        "request-promise": "^4.2.5",
-        "snyk": "^1.234.2"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/danielgp/sharepoint-extractor.git"
-    },
-    "scripts": {
-        "start": "node main.js"
-    }
+  "name": "sharepoint-extractor",
+  "description": "Extract information from on-line SharePoint using nodejs framework",
+  "version": "2.2.6",
+  "license": "MIT",
+  "keywords": [
+    "csv",
+    "server",
+    "sharepoint"
+  ],
+  "author": {
+    "name": "Daniel Popiniuc",
+    "email": "daniel.popiniuc@honeywell.com"
+  },
+  "dependencies": {
+    "is-number": "^7.0.0",
+    "minimist": ">=0.2.1",
+    "node-sp-auth": "^2.5.7",
+    "request-promise": "^4.2.5",
+    "snyk": "^1.316.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielgp/sharepoint-extractor.git"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "snyk": true
 }
