@@ -17,7 +17,7 @@
     "minimist": ">=0.2.1",
     "node-sp-auth": "^2.5.7",
     "request-promise": "^4.2.5",
-    "snyk": "^1.316.1"
+    "snyk": "^1.425.4"
   },
   "repository": {
     "type": "git",
