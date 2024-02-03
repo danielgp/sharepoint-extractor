@@ -16,7 +16,7 @@
     "is-number": "^7.0.0",
     "minimist": ">=1.2.6",
     "node-sp-auth": "^2.5.7",
-    "request-promise": "^4.2.5",
+    "request-promise": "^4.2.6",
     "snyk": "^1.1064.0"
   },
   "repository": {
