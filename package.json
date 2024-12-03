@@ -15,7 +15,7 @@
   "dependencies": {
     "is-number": "^7.0.0",
     "minimist": ">=1.2.6",
-    "node-sp-auth": "^3.0.8",
+    "node-sp-auth": "^3.0.9",
     "request-promise": "^4.2.6",
     "snyk": "^1.1291.1"
   },
